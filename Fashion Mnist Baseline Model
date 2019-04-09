@@ -1,0 +1,95 @@
+This project classifies various pieces of clothing. The data set used is the Fashion Mnist dataset. It contains 70,000 grayscale images of size 28 pixels by 28 pixels. The classification used for the 10 pieces of clothing are given below:
+
+0: T-shirt/top
+1: Trouser
+2: Pullover
+3: Dress
+4: Coat
+5: Sandals
+6: Shirt
+7: Sneakers
+8: Bags
+9: Ankle boots
+
+The training dataset contains 60,000 images whereas the test data set contains 10,000 images
+
+The procedure for classifying the images is given below.
+
+# Import the libraries
+from matplotlib import pyplot
+from keras.utils import to_categorical
+from keras.models import Sequential 
+from keras.layers import Conv2D 
+from keras.layers import MaxPooling2D 
+from keras.layers import Dense 
+from keras.layers import Flatten 
+from keras.optimizers import SGD
+from keras.datasets import fashion_mnist
+# Load the dataset and convert the image to a single channel
+(trainX, trainY), (testX, testY) = fashion_mnist.load_data() 
+trainX = trainX.reshape((trainX.shape[0], 28, 28, 1)) 
+testX = testX.reshape((testX.shape[0], 28, 28, 1)) 
+trainY = to_categorical(trainY) 
+testY = to_categorical(testY) 
+# Normalize the pixel data
+trainX = trainX.astype('float32') 
+testX = testX.astype('float32') 
+trainX = trainX / 255.0 
+testX = testX / 255.0
+# Define the model and compile it
+model = Sequential() 
+model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', input_shape=(28, 28, 1))) 
+model.add(MaxPooling2D((2, 2))) 
+model.add(Flatten()) 
+model.add(Dense(100, activation='relu', kernel_initializer='he_uniform'))
+model.add(Dense(10, activation='softmax')) 
+opt = SGD(lr=0.01, momentum=0.9) 
+model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+# Fit the model
+model.fit(trainX, trainY, epochs=10)
+# Evaluate the model
+test_loss = model.evaluate(testX, testY)
+print(test_loss)
+
+Output:
+
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_3 (Conv2D)            (None, 26, 26, 32)        320       
+_________________________________________________________________
+max_pooling2d_3 (MaxPooling2 (None, 13, 13, 32)        0         
+_________________________________________________________________
+flatten_3 (Flatten)          (None, 5408)              0         
+_________________________________________________________________
+dense_5 (Dense)              (None, 100)               540900    
+_________________________________________________________________
+dense_6 (Dense)              (None, 10)                1010      
+=================================================================
+Total params: 542,230
+Trainable params: 542,230
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/10
+60000/60000 [==============================] - 43s 709us/step - loss: 0.4296 - acc: 0.8444
+Epoch 2/10
+60000/60000 [==============================] - 42s 703us/step - loss: 0.2876 - acc: 0.8964
+Epoch 3/10
+60000/60000 [==============================] - 42s 706us/step - loss: 0.2463 - acc: 0.9094
+Epoch 4/10
+60000/60000 [==============================] - 42s 701us/step - loss: 0.2186 - acc: 0.9196
+Epoch 5/10
+60000/60000 [==============================] - 42s 704us/step - loss: 0.1970 - acc: 0.9262
+Epoch 6/10
+60000/60000 [==============================] - 42s 701us/step - loss: 0.1774 - acc: 0.9339
+Epoch 7/10
+60000/60000 [==============================] - 42s 699us/step - loss: 0.1615 - acc: 0.9404
+Epoch 8/10
+60000/60000 [==============================] - 42s 703us/step - loss: 0.1470 - acc: 0.9454
+Epoch 9/10
+60000/60000 [==============================] - 42s 699us/step - loss: 0.1333 - acc: 0.9502
+Epoch 10/10
+60000/60000 [==============================] - 42s 702us/step - loss: 0.1201 - acc: 0.9566
+10000/10000 [==============================] - 2s 242us/step
+[0.2795388916313648, 0.912]
