@@ -1,3 +1,19 @@
+Cifar10 dataset contains 60,000 color images each of size 32 pixels by 32 pixels. The images are photographs from 10 different classes such as birds, frogs, automobiles etc. The list of the 10 classes along with their integer representation is given below:
+
+0: airplane
+1: automobile
+2: bird
+3: cat
+4: deer
+5: dog
+6: frog
+7: horse
+8: ship
+9: truck
+
+There are 50,000 images in the training dataset and 10,000 images in the test dataset. The objective is to train a neural network to classify an image into one of the 10 classes. 
+
+Let's use a VGG model architecture. The architecture involves stacking convolutional layers with 3 X 3 filters followed by a max pooling layer. Together these layers form a block. These blocks can be repeated with the number of filters increasing with the depth of the network (32 for block 1, 64 for block 2, 128 for block 3 etc.). Padding is used to ensure that the height and width of the output matches that of the input. Each layer will use the RELU activation function. 
 
 VGG Model with 1 block:
 
@@ -68,4 +84,23 @@ def run_test_harness():
 # Calling the function
 run_test_harness()
 
+Accuracy: 67.230
+Graphs showing cross entropy loss and accuracy for train and test sets.
 
+VGG Model with 2 blocks:
+
+# Define the model
+def define_model(): 
+  model = Sequential() 
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(32, 32, 3)))
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2)))
+  model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2))) 
+  model.add(Flatten()) 
+  model.add(Dense(128, activation='relu', kernel_initializer='he_uniform')) 
+  model.add(Dense(10, activation='softmax'))
+  opt = SGD(lr=0.001, momentum=0.9) 
+  model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+  return model
