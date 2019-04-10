@@ -107,7 +107,7 @@ def define_model():
   return model
 
 Output:
-Accuracy: 
+Accuracy: 71.610
 Graphs showing cross entropy loss and accuracy for train and test sets.
 
 VGG Model with 3 blocks:
@@ -132,7 +132,7 @@ def define_model():
   return model
 
 Output:
-Accuracy: 
+Accuracy: 73.600
 Graphs showing cross entropy loss and accuracy for train and test sets.
 
 
