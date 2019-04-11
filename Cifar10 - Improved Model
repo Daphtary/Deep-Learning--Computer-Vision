@@ -183,6 +183,10 @@ Output:
 WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:3445: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
 Instructions for updating:
 Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+[0.06577836162537336, 0.9866]
+[0.5895635866045952, 0.8254]
+
+The accuracy of the model has gone up from 73% to 82% using Dropout Regularization.
 
 - Data Augmentation
 # Import the libraries
@@ -249,10 +253,14 @@ It involves making copies of the examples in the training dataset with minor ran
 
 
 Output:
-Using TensorFlow backend.
+Downloading data from https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
+170500096/170498071 [==============================] - 5s 0us/step
 WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
 Instructions for updating:
 Colocations handled automatically by placer.
 WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow/python/ops/math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
 Instructions for updating:
 Use tf.cast instead.
+[0.5704943998098373, 0.8392]
+
+The accuracy of the model has gone up from 73% to 84% using Data Augmentation.
