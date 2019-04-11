@@ -1,0 +1,258 @@
+Cifar10 dataset using 1 VGG block.
+
+# Import the libraries
+
+import sys
+
+from keras.datasets import cifar10
+
+from keras.utils import to_categorical 
+
+from keras.models import Sequential 
+
+from keras.layers import Conv2D 
+
+from keras.layers import MaxPooling2D 
+
+from keras.layers import Dense 
+
+from keras.layers import Flatten 
+
+from keras.optimizers import SGD
+
+from matplotlib import pyplot
+
+
+
+# Load the dataset
+
+def load_dataset(): 
+
+  (trainX, trainY), (testX, testY) = cifar10.load_data() 
+
+  trainY = to_categorical(trainY) 
+
+  testY = to_categorical(testY)
+
+  return trainX, trainY, testX, testY
+
+
+
+# Normalize the pixels
+
+def prep_pixels(train, test):
+
+  train_norm = train.astype('float32')
+
+  test_norm = test.astype('float32')
+
+  train_norm = train_norm / 255.0 
+
+  test_norm = test_norm / 255.0 
+
+  return train_norm, test_norm
+
+
+
+# Define the model
+
+def define_model(): 
+
+  model = Sequential() 
+
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(32, 32, 3)))
+
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+
+  model.add(MaxPooling2D((2, 2))) 
+
+  model.add(Flatten()) 
+
+  model.add(Dense(128, activation='relu', kernel_initializer='he_uniform')) 
+
+  model.add(Dense(10, activation='softmax'))
+
+  opt = SGD(lr=0.001, momentum=0.9) 
+
+  model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+
+  return model
+
+  
+
+
+  
+
+# Creating a function that combines functions for the individual steps above  
+
+def run_test_harness():
+
+  trainX, trainY, testX, testY = load_dataset()
+
+  trainX, testX = prep_pixels(trainX, testX)
+
+  model = define_model()
+
+  model.fit(trainX, trainY, epochs=100, batch_size=64, validation_data=(testX, testY), verbose=0) 
+  train_loss = model.evaluate(trainX, trainY, verbose=0)
+  print(train_loss)
+  test_loss = model.evaluate(testX, testY, verbose=0)
+  print(test_loss)
+  
+    
+
+
+# Calling the function
+
+run_test_harness()
+
+Output:
+
+[0.0008291749074403196, 1.0]
+[2.5510393041610717, 0.6606]
+
+The accuracy on the training set is 100% while that on the test set is 66.06%. There is overfitting i.e. the model is not able to generally well on unseen data (test dataset in this case).
+
+By increasing the number of blocks the accuracy increases to 71% for 2 VGG blocks and 73% for 3 VGG blocks. Here also there is overfitting. We can reduce this by:
+
+- Using Dropout Regularization
+Dropout is a technique that randomly drops nodes out of the network. It has a regularizing eﬀect as the remaining nodes must adapt to pick-up the slack of the removed nodes. Dropout can be added to the model by adding new Dropout layers, where the amount of nodes removed is speciﬁed as a parameter. We will add Dropout layers after each max pooling layer and after the fully connected layer, and use a ﬁxed dropout rate of 20% (e.g. retain 80% of the nodes).
+
+# Import the libraries
+import sys
+from keras.datasets import cifar10
+from keras.utils import to_categorical 
+from keras.models import Sequential 
+from keras.layers import Conv2D 
+from keras.layers import MaxPooling2D 
+from keras.layers import Dense 
+from keras.layers import Flatten 
+from keras.optimizers import SGD
+from matplotlib import pyplot
+from keras.layers import Dropout 
+# Load the dataset
+def load_dataset(): 
+  (trainX, trainY), (testX, testY) = cifar10.load_data() 
+  trainY = to_categorical(trainY) 
+  testY = to_categorical(testY)
+  return trainX, trainY, testX, testY
+# Normalize the pixels
+def prep_pixels(train, test):
+  train_norm = train.astype('float32')
+  test_norm = test.astype('float32')
+  train_norm = train_norm / 255.0 
+  test_norm = test_norm / 255.0 
+  return train_norm, test_norm
+# Define the model
+def define_model(): 
+  model = Sequential() 
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(32, 32, 3)))
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2))) 
+  model.add(Dropout(0.2)) 
+  model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2)))
+  model.add(Dropout(0.2)) 
+  model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2)))
+  model.add(Dropout(0.2)) 
+  model.add(Flatten()) 
+  model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
+  model.add(Dropout(0.2)) 
+  model.add(Dense(10, activation='softmax'))
+  opt = SGD(lr=0.001, momentum=0.9) 
+  model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+  return model
+# Creating a function that combines functions for the individual steps above  
+def run_test_harness():
+  trainX, trainY, testX, testY = load_dataset()
+  trainX, testX = prep_pixels(trainX, testX)
+  model = define_model()
+  model.fit(trainX, trainY, epochs=100, batch_size=64, validation_data=(testX, testY), verbose=0) 
+  train_loss = model.evaluate(trainX, trainY, verbose=0)
+  print(train_loss)
+  test_loss = model.evaluate(testX, testY, verbose=0)
+  print(test_loss)
+# Calling the function
+run_test_harness()
+
+Output:
+
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:3445: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+
+- Data Augmentation
+# Import the libraries
+import sys
+from keras.datasets import cifar10
+from keras.utils import to_categorical 
+from keras.models import Sequential 
+from keras.layers import Conv2D 
+from keras.layers import MaxPooling2D 
+from keras.layers import Dense 
+from keras.layers import Flatten 
+from keras.optimizers import SGD
+from matplotlib import pyplot
+from keras.preprocessing.image import ImageDataGenerator
+# Load the dataset
+def load_dataset(): 
+  (trainX, trainY), (testX, testY) = cifar10.load_data() 
+  trainY = to_categorical(trainY) 
+  testY = to_categorical(testY)
+  return trainX, trainY, testX, testY
+# Normalize the pixels
+def prep_pixels(train, test):
+  train_norm = train.astype('float32')
+  test_norm = test.astype('float32')
+  train_norm = train_norm / 255.0 
+  test_norm = test_norm / 255.0 
+  return train_norm, test_norm
+# Define the model
+def define_model(): 
+  model = Sequential() 
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(32, 32, 3)))
+  model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2))) 
+  model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2)))
+  model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+  model.add(MaxPooling2D((2, 2)))
+  model.add(Flatten()) 
+  model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
+  model.add(Dense(10, activation='softmax'))
+  opt = SGD(lr=0.001, momentum=0.9) 
+  model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+  return model
+# Creating a function that combines functions for the individual steps above  
+def run_test_harness():
+  trainX, trainY, testX, testY = load_dataset()
+  trainX, testX = prep_pixels(trainX, testX)
+  model = define_model()
+  # create data generator 
+  datagen = ImageDataGenerator(width_shift_range=0.1, height_shift_range=0.1, horizontal_flip=True)
+  # prepare iterator 
+  it_train = datagen.flow(trainX, trainY, batch_size=64)
+  # fit model 
+  steps = int(trainX.shape[0] / 64) 
+  model.fit_generator(it_train, steps_per_epoch=steps, epochs=100, validation_data=(testX, testY), verbose=0) 
+  test_loss = model.evaluate(testX, testY, verbose=0)
+  print(test_loss)
+# Calling the function
+run_test_harness()
+
+It involves making copies of the examples in the training dataset with minor random modiﬁcations. This has a regularizing eﬀect as it both expands the training dataset and allows the model to learn the same general features. We will augment the baseline image using horizontal ﬂips and 10% shifts in the height and width of the image. This is implemented using the ImageDataGenerator class. 
+
+
+Output:
+Using TensorFlow backend.
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow/python/ops/math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.cast instead.
