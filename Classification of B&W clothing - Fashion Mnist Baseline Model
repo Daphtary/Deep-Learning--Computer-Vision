@@ -1,3 +1,5 @@
+Classification of Black & White pieces of Clothing - Fashion Mnist Dataset
+
 This project classifies various pieces of clothing. The data set used is the Fashion Mnist dataset. It contains 70,000 grayscale images of size 28 pixels by 28 pixels. The classification used for the 10 pieces of clothing are given below:
 
 0: T-shirt/top
