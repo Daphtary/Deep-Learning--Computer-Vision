@@ -1,3 +1,5 @@
+Classification of small colored photographs - Cifar10 dataset
+
 Cifar10 dataset contains 60,000 color images each of size 32 pixels by 32 pixels. The images are photographs from 10 different classes such as birds, frogs, automobiles etc. The list of the 10 classes along with their integer representation is given below:
 
 0: airplane
