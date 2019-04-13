@@ -1,3 +1,5 @@
+Classification of small colored photographs - Cifar10 dataset (Improved model) 
+
 Cifar10 dataset using 1 VGG block.
 
 # Import the libraries
