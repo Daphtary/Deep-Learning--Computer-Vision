@@ -1,4 +1,4 @@
-Classification of small colored photographs - Cifar10 dataset (Improved model) 
+Classification of small colored photographs - Cifar10 dataset (Improved model using Dropout Regularization and Data augmentation) 
 
 Cifar10 dataset using 1 VGG block.
 
